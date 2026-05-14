@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.Python
+
+# Virtual environment
+venv/
+env/
+ENV/
+
+# Environment variables (secrets)
+.env
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbbs.db
+
+# Node (shouldn't be here)
+package-lock.json
+node_modules/
