@@ -3,6 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.core.database import create_tables
 from app.api import auth, events
+import app.models.user
+import app.models.event
 
 app = FastAPI(title=settings.APP_NAME, version=settings.APP_VERSION)
 
