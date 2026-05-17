@@ -21,6 +21,21 @@ def create_access_token(data: dict):
     encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
     return encoded_jwt
 
+def create_email_verification_token(user_id: int):
+    to_encode = {"sub": str(user_id), "type": "email_verification"}
+    expire = datetime.utcnow() + timedelta(hours=24)
+    to_encode.update({"exp": expire})
+    return jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+
+def verify_email_token(token: str):
+    try:
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        if payload.get("type") != "email_verification":
+            return None
+        return int(payload.get("sub"))
+    except JWTError:
+        return None
+
 def authenticate_user(db: Session, email: str, password: str):
     user = db.query(User).filter(User.email == email).first()
     if not user or not verify_password(password, user.password_hash):
@@ -29,6 +44,11 @@ def authenticate_user(db: Session, email: str, password: str):
 
 def create_user(db: Session, user: UserCreate):
     hashed_password = get_password_hash(user.password)
+    
+    # Check if this is the first user in the database
+    user_count = db.query(User).count()
+    assigned_role = "admin" if user_count == 0 else "attendee"
+    
     db_user = User(
         email=user.email,
         password_hash=hashed_password,
@@ -37,7 +57,8 @@ def create_user(db: Session, user: UserCreate):
         phone=user.phone,
         company=user.company,
         position=user.position,
-        country=user.country
+        country=user.country,
+        role=assigned_role
     )
     db.add(db_user)
     db.commit()

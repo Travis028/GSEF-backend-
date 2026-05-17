@@ -25,5 +25,6 @@ class Event(BaseModel):
     created_by = Column(Integer, ForeignKey("users.id"))
     
     # Relationships
+    creator = relationship("User", foreign_keys=[created_by])
     ticket_types = relationship("TicketType", back_populates="event", cascade="all, delete-orphan")
     registrations = relationship("Registration", back_populates="event")

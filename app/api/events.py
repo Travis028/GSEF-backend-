@@ -2,7 +2,9 @@
 from sqlalchemy.orm import Session
 from typing import Optional, List
 from app.core.database import get_db
+from app.core.dependencies import get_current_admin_user
 from app.models.event import Event
+from app.models.user import User
 from app.schemas.event import EventCreate, EventResponse, EventDetailResponse
 
 router = APIRouter(prefix="/events", tags=["Events"])
@@ -11,7 +13,7 @@ router = APIRouter(prefix="/events", tags=["Events"])
 def get_events(
     skip: int = 0,
     limit: int = 100,
-    status: Optional[str] = Query(None, regex="^(upcoming|ongoing|completed)$"),
+    status: Optional[str] = Query(None, pattern="^(upcoming|ongoing|completed)$"),
     featured: Optional[bool] = None,
     db: Session = Depends(get_db)
 ):
@@ -38,8 +40,11 @@ def get_event(event_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Event not found")
     return event
 
+from app.core.dependencies import get_current_admin_user
+from app.models.user import User
+
 @router.post("/", response_model=EventResponse)
-def create_event(event_data: EventCreate, db: Session = Depends(get_db)):
+def create_event(event_data: EventCreate, current_user: User = Depends(get_current_admin_user), db: Session = Depends(get_db)):
     import re
     slug = re.sub(r'[^a-z0-9]+', '-', event_data.title.lower()).strip('-')
     db_event = Event(slug=slug, **event_data.model_dump())

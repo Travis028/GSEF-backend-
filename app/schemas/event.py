@@ -1,5 +1,5 @@
 ﻿from pydantic import BaseModel
-from typing import Optional, List
+from typing import Optional, List, Any
 from datetime import date, time, datetime
 from decimal import Decimal
 
@@ -33,5 +33,6 @@ class EventResponse(EventBase):
         from_attributes = True
 
 class EventDetailResponse(EventResponse):
-    ticket_types: List["TicketTypeResponse"] = []
-    schedule: List["ScheduleResponse"] = []
+    ticket_types: List[Any] = []
+    schedule: List[Any] = []
+

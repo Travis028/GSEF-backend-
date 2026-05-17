@@ -21,6 +21,7 @@ class UserLogin(BaseModel):
 class UserResponse(UserBase):
     id: int
     role: str
+    email_verified: bool
     profile_image: Optional[str] = None
     is_active: bool
     created_at: datetime
